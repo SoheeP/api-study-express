@@ -10,10 +10,12 @@ router.get('/', function (req, res, next) {
   });
 });
 
-
+/**
+ * Movie Main
+ */
 router.route('/movie')
   .get(async (req, res, next) => {
-    console.log(req.query, 'queryqueryqueryqueryquery');
+    console.log(req.query, 'mainmainmainmainmainmainmain');
     let query_arr = _.reduce(req.query, (arr, val, key) => {
       arr.push(`${key}=${val}`)
       return arr;
@@ -21,6 +23,25 @@ router.route('/movie')
     let get_query = query_arr.join('&');
 
     axios.get(`https://yts.tl/api/v2/list_movies.json?${get_query}`)
+      .then((response) => {
+        console.log(response.data);
+        res.json(response.data)
+      })
+  });
+
+/**
+ * Movie Detail
+ */
+router.route('/movie/detail')
+  .get(async (req, res, next) => {
+    console.log(req.query, 'detaildetaildetaildetaildetaildetail');
+    let query_arr = _.reduce(req.query, (arr, val, key) => {
+      arr.push(`${key}=${val}`)
+      return arr;
+    }, []);
+    let get_query = query_arr.join('&');
+
+    axios.get(`https://yts.tl/api/v2/movie_details.json?${get_query}`)
       .then((response) => {
         console.log(response.data);
         res.json(response.data)
