@@ -3,7 +3,8 @@ var router = express.Router();
 var _ = require('lodash');
 var axios = require('axios');
 var {
-  db
+  db,
+  query
 } = require('./database/mysql');
 // const uuidv3 = require('uuid/v3');
 const moment = require('moment');
@@ -35,7 +36,9 @@ router.route('/login')
           db.query(`insert into log (client_seq, country, login,ip,device) values("${userSeq}","${geo.country}","${nowTime}","${ip}","${device}")`)
           res.json(result_data);
         } else {
-          result_data = {result: 2};
+          result_data = {
+            result: 2
+          };
           res.json(result_data)
         }
         console.log(result_data);
@@ -52,6 +55,7 @@ router.route('/signup')
     const username = req.body.username;
     const phone = req.body.phone;
     const verification = req.body.verification;
+    let verify;
 
     // console.log(email);
     // console.log(email);
@@ -65,34 +69,28 @@ router.route('/signup')
     // 3번은 인증이 안됬다.
     // 4번은 중복체크 
     let result;
-    if (verification != 1) {
-      result = {
-        result: 3
-      }
+    console.log(verification);
+    if (verification.length === 0) {
+      result = { result: 3}
       res.json(result)
     } else {
+      verify = 1
       db.query(`select * from user where email="${email}"`, (err, results) => {
         if (err) throw err;
         console.log(results);
         if (results.length > 0) {
-          res.json({
-            result: 4
-          })
+          res.json({ result: 4 })
         } else {
           //회원가입 데이터베이스
-          db.query(`insert into user (email, password, username, phone, verification)  
-            values ( "${email}", "${password}", "${username}", "${phone}", "${verification}" )`,
+          db.query(`insert into user (email, password, username, phone, verification,seq)  
+            values ( "${email}", "${password}", "${username}", "${phone}", "${verify}", "${verification}" )`,
             function (error, results, fields) {
               if (error) {
-                result = {
-                  result: 2
-                };
+                result = { result: 2 };
                 res.json(result);
                 console.log(error);
               } else {
-                result = {
-                  result: 1
-                };
+                result = { result: 1 };
                 res.json(result)
                 console.log(results);
               }
@@ -103,6 +101,39 @@ router.route('/signup')
     }
   });
 
+
+/**
+ * ROUTER: withdrawal
+ */
+router.route('/withdrawal')
+  .post(async (req, res, next) => {
+    let seq = req.body.seq;
+    query(`DELETE FROM user WHERE seq="${seq}"`, (result) => {
+      console.log(result);
+      res.json({
+        result: 1
+      })
+    });
+  });
+
+/**
+ * ROUTER: email Check
+ */
+router.route('/email/check')
+  .post(async (req, res, next) => {
+    let email = req.body.email;
+    console.log(email);
+    query(`SELECT * FROM user WHERE email="${email}"`, (result) => {
+      console.log(result);
+      if(result.length > 0){
+        res.json({result: 1})
+      }else{
+        res.json({result: 2})
+      }
+    });
+  });
+
+  
 module.exports = router;
 
 
