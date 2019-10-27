@@ -11,6 +11,7 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var authRouter = require('./routes/auth');
 var faqRouter = require('./routes/faq');
+var boardRouter = require('./routes/board');
 
 var app = express();
 
@@ -29,6 +30,8 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/auth', authRouter);
 app.use('/faq', faqRouter);
+app.use('/board', boardRouter);
+
 
 app.use(cors());
 
