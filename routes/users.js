@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var {db} = require('./database/mysql');
+var {query} = require('./database/mysql');
 
 /* GET users listing. */
 // router.get('/mypage', function(req, res, next) {
@@ -24,4 +24,17 @@ router.get('/mypage', function(req, res, next) {
 });
 
 
+router.post('/profile/change/password', function(req, res, next) {
+  const {userSeq,password} = req.body;
+  const body = {};
+  query(`UPDATE user SET password='${password}' where seq='${userSeq}'`, (result) => {
+    console.log(result);
+    body.result =1;
+    res.json(body);
+  })
+
+  // res.send('respond with a resource');
+
+
+});
 module.exports = router;
